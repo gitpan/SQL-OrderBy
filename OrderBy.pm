@@ -10,7 +10,7 @@ use vars qw(@EXPORT @EXPORT_OK);
     to_asc_desc
 );
 use vars qw($VERSION);
-$VERSION = '0.08.2';
+$VERSION = '0.08.3';
 
 # sub toggle_resort {{{
 # Transform an order by clause.
@@ -191,13 +191,15 @@ SQL::OrderBy - Transform an SQL ORDER BY clause.
   );
   # 'NAME ASC, ARTIST DESC, ALBUM ASC'
 
-  # Fetch the columns as a name array and numeric direction hash.
+  # Fetch the columns as a name array and direction hashes.
   @columns = get_columns (
-      order_by => 'name, artist desc, album',
+      order_by => 'name, artist deSc, album',
       name_direction    => 1,
       numeric_direction => 1,
   );
-  # (['name','artist','album'], {name=>1, artist=>0, album=>1})
+  # (['name','artist','album'],
+  #  {name=>1, artist=>0, album=>1},
+  #  {name=>'', artist=>'deSc', album=>''})
 
   # Output a "column direction" array.
   @columns = col_dir_list (\@column_names, \%direction);
@@ -315,7 +317,8 @@ argument.
 
 In a scalar context, this function returns the clause as a (CSV)
 string.  In an array context, this function returns a list of column
-names with their respective sort directions.
+names with their respective sort directions as numeric hash and a
+hash of the exact sort directions passed in.
 
 This function optionally takes Boolean flags affecting the returned
 data structure.  These are:

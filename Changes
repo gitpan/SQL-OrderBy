@@ -64,3 +64,8 @@ Revision history for Perl extension SQL::OrderBy.
     - Whoops!  Set selected column name direction too.
     - Add test cases for selecting an unseen column name with
       direction.
+
+0.08.3  Mon Mar  3 2003
+    - Updated documentation for get_columns().
+    - Added a test for the enhanced get_columns() functionality.
+    - "Lord, am I done with this ultra-simple module yet?"

@@ -26,6 +26,9 @@ is join (', ', @{ $columns[0] }),
 is join (', ', map { $columns[1]->{$_} } sort keys %{ $columns[1] }),
     '1, 0, 1',
     'numeric column directions';
+is join (', ', map { $columns[2]->{$_} } sort keys %{ $columns[2] }),
+    ', desc, ',
+    'passed alpha column directions';
 
 # fetch a asc/desc name_direction list
 # NOTE: Original case of asc/DESC is not preserved. Oops!
