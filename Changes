@@ -30,3 +30,9 @@ Revision history for Perl extension SQL::OrderBy.
 0.06.2  Mon Feb 24 2003
     - Fixed documentation again.
     - Rearranged distribution files.
+
+0.07  Tue Feb 25 2003
+    - Added a function to fetch column names and directions.
+    - Added a function to render a column "name direction" list.
+    - Added a function to convert a numeric direction list to asc/desc format.
+    - Added binary flags for returning different formats.
