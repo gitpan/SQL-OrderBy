@@ -76,3 +76,6 @@ Revision history for Perl extension SQL::OrderBy.
 
 0.08.5  Mon Mar  3 2003
     - Okay.  Maybe I'm typographically obsessive-compulsive.
+
+0.08.6  Wed May 21 2003
+    - Pruned and rearranged documentation.

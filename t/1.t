@@ -1,7 +1,7 @@
 use strict;
 use Test::More tests => 22;
 
-BEGIN { use_ok('SQL::OrderBy') };
+BEGIN { use_ok 'SQL::OrderBy' };
 
 # fetch a numeric name_direction list
 my @columns = get_columns (

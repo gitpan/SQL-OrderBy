@@ -1,4 +1,4 @@
-SQL/OrderBy version 0.08.5
+SQL/OrderBy version 0.08.6
 ==========================
 
 INSTALLATION
@@ -12,7 +12,7 @@ To install this module type the following:
 
 DEPENDENCIES
 
-None.
+None
 
 COPYRIGHT AND LICENCE
 
