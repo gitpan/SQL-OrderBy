@@ -1,7 +1,10 @@
+# $Id: OrderBy.pm,v 1.2 2003/09/28 07:48:09 gene Exp $
+
 package SQL::OrderBy;
 
 use strict;
-use vars '$VERSION'; $VERSION = '0.08.7';
+use vars '$VERSION';
+$VERSION = '0.0808';
 use base 'Exporter';
 use vars qw(@EXPORT @EXPORT_OK);
 @EXPORT_OK = @EXPORT = qw(
@@ -165,7 +168,7 @@ __END__
 
 =head1 NAME
 
-SQL::OrderBy - Transform an SQL "order by" clause.
+SQL::OrderBy - Transform an SQL "order by" clause
 
 =head1 SYNOPSIS
 
@@ -371,7 +374,7 @@ See the Changes file in this distribution.
 
 =head1 AUTHOR
 
-Gene Boggs E<lt>cpan@ology.netE<gt>
+Gene Boggs E<lt>gene@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

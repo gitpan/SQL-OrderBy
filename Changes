@@ -82,3 +82,7 @@ Revision history for Perl extension SQL::OrderBy.
 
 0.08.7  Fri Jul 11 2003
     - Excised the unnecessary =head1 ABSTRACT section.
+
+0.0808  Sun Sep 27 2003
+    - Made the $VERSION a real number and put it on it's own line.
+      This should help the CPAN indexing.
