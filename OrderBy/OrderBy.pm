@@ -9,7 +9,7 @@ use vars qw($VERSION @EXPORT @EXPORT_OK);
     resort
 );
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 sub resort {
     my %args = @_;
@@ -35,7 +35,7 @@ sub resort {
             exists $columns{$args{selected}} &&
             $columns{$args{selected}} eq 'asc'
             ? 'desc' : 'asc';
-        # Remove the sected column name from its old position.
+        # Remove the selected column name from its old position.
         @columns = grep { $_ ne $args{selected} } @columns;
         # Add the selected column name to the beginning.
         unshift @columns, $args{selected};
@@ -51,7 +51,7 @@ __END__
 
 =head1 NAME
 
-SQL::OrderBy - Perl exstension to transform an SQL ORDER BY clause.
+SQL::OrderBy - Perl extension to transform an SQL ORDER BY clause.
 
 =head1 SYNOPSIS
 
@@ -78,7 +78,7 @@ SQL::OrderBy - Perl exstension to transform an SQL ORDER BY clause.
 =head1 ABSTRACT
 
 Resort and toggle (ascending/descending) table columns given an SQL
-ORDER BY clause.
+ORDER BY clause and a selected column name.
 
 =head1 DESCRIPTION
 
@@ -86,6 +86,14 @@ This package simply transforms an SQL ORDER BY clause by moving a
 selected column name to the beginning of the clause and toggling
 its ascending/descending state based on whether it is already first
 in the clause.
+
+This implements a feature that is essential for GUI environments,
+where the user interacts with a table by sorting and resorting with a
+mouse and "toggle button column headings" during an SQL driven,
+interactive search refinement session.
+
+Note that this is intentionally naive code, in that no database
+integrity checking is done.
 
 =head1 EXPORTS
 
@@ -96,26 +104,31 @@ in the clause.
         selected => $selected_column_name,
     )
 
-This is the sole function of this package.  It takes only a
-(hopefully) well formed, SQL "ORDER BY" clause as a simple string, and
-a selected column name.  These must be provided as named parameters.
+The resort() function takes a (hopefully) well formed, SQL "ORDER
+BY" clause as a simple string, and a column name as arguments.
+These must be provided as named parameters.
 
-This selected column name is moved or added to the beginning of the
-clause with its sort direction (ascending or descending).
+The column name is moved or added to the beginning of the clause
+with its sort direction exposed.
 
-If this selected clause is the first column of the list, its sort
-direction is flipped.
+If this column is the first column of the list, its sort direction
+is flipped between ascending (asc) and descending (desc).
 
 Note that the state of the sort is maintained, since the selected
 column name is the only one that is fondled.
 
-This implements a feature is essential for GUI environments, where
-the user interacts with a table by sorting and resorting with a
-mouse and "toggle button" column names.
-
 * If you leave off the selected argument, this function will simply
 return the clause with sort directions for each column name.  That
 is, no "toggling" or moving is done.
+
+=head1 DEPENDENCIES
+
+None.
+
+=head1 HISTORY
+
+0.01 - Initial release.
+0.02 - Documentation fixes and enhancement.
 
 =head1 AUTHOR
 
