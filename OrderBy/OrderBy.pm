@@ -9,7 +9,7 @@ use vars qw($VERSION @EXPORT @EXPORT_OK);
     resort
 );
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 sub resort {
     my %args = @_;
@@ -73,7 +73,7 @@ SQL::OrderBy - Perl extension to transform an SQL ORDER BY clause.
         ),
         selected => 'time',
     ), "\n";
-    # artist desc, name asc, album asc, time asc
+    # time asc, artist desc, name asc, album asc
 
 =head1 ABSTRACT
 
@@ -129,6 +129,7 @@ None.
 
 0.01 - Initial release.
 0.02 - Documentation fixes and enhancement.
+0.03 - Ack!  My synopsis!
 
 =head1 AUTHOR
 
