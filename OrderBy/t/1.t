@@ -8,39 +8,43 @@ BEGIN { use_ok('SQL::OrderBy') };
 
 #########################
 
+my $clause_string = 'name, artist, album';
+my $column = 'artist';
+my $result = 'artist asc, name asc, album asc';
+
 my $order = SQL::OrderBy::toggle_resort(
-    selected => 'artist',
-    order_by => 'name, artist, album',
+    selected => $column,
+    order_by => $clause_string,
 );
-is $order, 'artist asc, name asc, album asc',
+is $order, $result,
     'order clause in scalar context';
 $order = SQL::OrderBy::toggle_resort(
-    selected => 'artist',
+    selected => $column,
     order_by => [ qw(name artist album) ],
 );
-is $order, 'artist asc, name asc, album asc',
+is $order, $result,
     'order array in scalar context';
 
 my @order = SQL::OrderBy::toggle_resort(
-    selected => 'artist',
-    order_by => 'name, artist, album',
+    selected => $column,
+    order_by => $clause_string,
 );
-is join (', ', @order), 'artist asc, name asc, album asc',
+is join (', ', @order), $result,
     'order clause in array context';
 @order = SQL::OrderBy::toggle_resort(
-    selected => 'artist',
+    selected => $column,
     order_by => [ qw(name artist album) ],
 );
-is join (', ', @order), 'artist asc, name asc, album asc',
+is join (', ', @order), $result,
     'order array in array context';
 
 $order = SQL::OrderBy::toggle_resort(
     selected => 'time',
     order_by => scalar SQL::OrderBy::toggle_resort(
-        selected => 'artist',
+        selected => $column,
         order_by => scalar SQL::OrderBy::toggle_resort(
-            selected => 'artist',
-            order_by => 'name, artist, album'
+            selected => $column,
+            order_by => $clause_string
         )
     )
 );

@@ -85,7 +85,7 @@ SQL::OrderBy - Transform an SQL ORDER BY clause.
     # ('artist asc', 'name asc', 'album asc')
 
     # Scalar context
-    print SQL::OrderBy::toggle_resort(
+    print scalar SQL::OrderBy::toggle_resort(
         selected => 'time',
         order_by => scalar SQL::OrderBy::toggle_resort(
             selected => 'artist',
@@ -119,16 +119,14 @@ integrity checking is done.
         selected => $column_name,
     )
 
-The toggle_resort() function takes two arguments provided as named
-parameters: an SQL "ORDER BY" clause as either a string or array
-reference and a column name.
+This function takes two arguments provided as named parameters: an 
+SQL "ORDER BY" clause as either a string or array reference and a 
+column name.
 
 The selected column name is moved or added to the beginning of the
-clause with its sort direction exposed.  The clause is returned as a
-string.
-
-If this column is the first column of the list, it's sort direction
-is flipped between ascending (asc) and descending (desc).
+clause with its sort direction exposed.  If this column is the first
+column of the list, it's sort direction is flipped between ascending
+(asc) and descending (desc).
 
 Note that the state of the sort is maintained, since the selected
 column name is the only one that is fondled.
@@ -154,7 +152,7 @@ None.
 
 =head1 TODO
 
-Add functions for different kinds of resorting, like "toggle reset".
+Add functions for different kinds of resorting.
 
 Add functions for handling different module statement objects.
 
@@ -178,6 +176,9 @@ Add functions for handling different module statement objects.
     - Made toggle_resort() accept an arrayref or string.
     - Added scalar/array context awareness.
     - Fixed/enhanced documentation.
+
+0.06  Fri Feb 21 2003
+    - Ugh.  Fixed my documentation again.
 
 =head1 AUTHOR
 
