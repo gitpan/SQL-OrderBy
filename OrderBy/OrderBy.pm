@@ -8,7 +8,7 @@ use strict;
 #    toggle_resort
 #);
 use vars qw($VERSION);
-$VERSION = '0.05';
+$VERSION = '0.06.1';
 
 # Transform an order by clause.
 sub toggle_resort {
@@ -125,7 +125,7 @@ column name.
 
 The selected column name is moved or added to the beginning of the
 clause with its sort direction exposed.  If this column is the first
-column of the list, it's sort direction is flipped between ascending
+column of the list, its sort direction is flipped between ascending
 (asc) and descending (desc).
 
 Note that the state of the sort is maintained, since the selected
@@ -178,7 +178,12 @@ Add functions for handling different module statement objects.
     - Fixed/enhanced documentation.
 
 0.06  Fri Feb 21 2003
-    - Ugh.  Fixed my documentation again.
+    - Fixed documentation.
+
+0.06.1  Mon Feb 24 2003
+    - Corrected version number and author email.
+    - Oops!  Only require an interpreter of 5.005.
+    - Document the test a bit.
 
 =head1 AUTHOR
 

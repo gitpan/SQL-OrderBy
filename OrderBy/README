@@ -1,5 +1,5 @@
-SQL/OrderBy version 0.01
-========================
+SQL/OrderBy version 0.06.1
+==========================
 
 INSTALLATION
 
@@ -20,4 +20,3 @@ Copyright (C) 2003 Gene Boggs
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
-

@@ -18,3 +18,11 @@ Revision history for Perl extension SQL::OrderBy.
       string clause.
     - Add scalar/array context sensitivity to toggle_resort().
       Fix/enhance documentation.
+
+0.06  Fri Feb 21 2003
+    - Ugh.  Fixed my documentation again.
+
+0.06.1  Mon Feb 24 2003
+    - Corrected the version number and author email.
+    - Oops!  Only require an interpreter of 5.005.
+    - Document the test a bit.
