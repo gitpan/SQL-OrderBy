@@ -1,7 +1,7 @@
 package SQL::OrderBy;
 
 use strict;
-use vars '$VERSION'; $VERSION = '0.08.6';
+use vars '$VERSION'; $VERSION = '0.08.7';
 use base 'Exporter';
 use vars qw(@EXPORT @EXPORT_OK);
 @EXPORT_OK = @EXPORT = qw(
@@ -228,11 +228,6 @@ SQL::OrderBy - Transform an SQL "order by" clause.
       show_ascending => 1,
   );
   # (name=>'asc', artist=>'desc', album=>'asc')
-
-=head1 ABSTRACT
-
-Resort and toggle (ascending/descending) table columns given an SQL
-"order by" clause.
 
 =head1 DESCRIPTION
 

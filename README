@@ -1,5 +1,5 @@
-SQL/OrderBy version 0.08.6
-==========================
+SQL/OrderBy distribution
+========================
 
 INSTALLATION
 
@@ -12,7 +12,7 @@ To install this module type the following:
 
 DEPENDENCIES
 
-None
+Test::More
 
 COPYRIGHT AND LICENCE
 
