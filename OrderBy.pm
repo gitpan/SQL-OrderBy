@@ -10,7 +10,7 @@ use vars qw(@EXPORT @EXPORT_OK);
     to_asc_desc
 );
 use vars qw($VERSION);
-$VERSION = '0.08.3';
+$VERSION = '0.08.4';
 
 # sub toggle_resort {{{
 # Transform an order by clause.

@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 21;
+use Test::More tests => 22;
 
 BEGIN { use_ok('SQL::OrderBy') };
 

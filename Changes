@@ -69,3 +69,7 @@ Revision history for Perl extension SQL::OrderBy.
     - Updated documentation for get_columns().
     - Added a test for the enhanced get_columns() functionality.
     - "Lord, am I done with this ultra-simple module yet?"
+
+0.08.4  Mon Mar  3 2003
+    - Ack.  I forgot to make Test::More know how many tests it should
+      run.
