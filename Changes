@@ -53,9 +53,14 @@ Revision history for Perl extension SQL::OrderBy.
     - Allowed persistent case for a direction name that is passed in.
     - Fixed/enhanced documentation.
 
-0.08.1  Sun Mar  1 2003
+0.08.1  Sun Mar  2 2003
     - Made sure the code can silently handle both empty order lists
       and clauses.
     - Added tests for empty order lists and clauses.
     - Cleaned up test output messages.
     - Cleaned up documentation.
+
+0.08.2  Mon Mar  3 2003
+    - Whoops!  Set selected column name direction too.
+    - Add test cases for selecting an unseen column name with
+      direction.

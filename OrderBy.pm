@@ -10,7 +10,7 @@ use vars qw(@EXPORT @EXPORT_OK);
     to_asc_desc
 );
 use vars qw($VERSION);
-$VERSION = '0.08.1';
+$VERSION = '0.08.2';
 
 # sub toggle_resort {{{
 # Transform an order by clause.
@@ -18,29 +18,26 @@ sub toggle_resort {
     my %args = @_;
 
     # Set the column name list and the directions.
-    my ($columns, $direction) = get_columns(
+    my ($columns, $direction, $asc_desc) = get_columns(
         %args,
         name_direction => 1,
         numeric_direction => 1,
     );
 
     # Handle a selected column.
-    if (my $selected = $args{selected}) {
-        # Set the direction according to our show_ascending flag.
-        $direction->{$selected} =
-            !$direction->{$selected} || $direction->{$selected}
-                ? 1 : 0;
+    if (my $name = $args{selected}) {
+        ($name, $direction, $asc_desc) = _name_direction($name, $direction, $asc_desc);
 
         # Toggle if the selected column is the first one.
-        if ($selected eq $columns->[0]) {
-            $direction->{$selected} = $direction->{$selected}
+        if ($name eq $columns->[0]) {
+            $direction->{$name} = $direction->{$name}
                 ? 0 : 1;
         }
 
         # Remove the selected column name from its old position.
-        @$columns = grep { $_ ne $selected } @$columns;
+        @$columns = grep { $_ ne $name } @$columns;
         # And add the selected column name to the beginning.
-        unshift @$columns, $selected;
+        unshift @$columns, $name;
     }
 
     # Convert from numeric, if asked to.
@@ -81,22 +78,14 @@ sub get_columns {
     }
 
     # Hold column names and directions.
-    my ($columns, $direction);
+    my ($columns, $direction, $asc_desc);
 
     # Set the column array and direction hashes.
-    my $asc_desc = {};
     for (@order) {
-        if (/^(.*?)(?:\s+(asc|desc))?$/i) {
-            # Use the direction provided; Ascend by default.
-            my ($name, $dir) = ($1, $2);
-            # Set the numeric directions.
-            $direction->{$name} = $dir && lc ($dir) eq 'desc' ? 0 : 1;
-            # Set the case sensitive alpha directions.
-            $asc_desc->{$name} = $dir ? $dir : '';
-        }
+        (my $name, $direction, $asc_desc) = _name_direction($_, $direction, $asc_desc);
 
         # Add the column to our columns array.
-        push @$columns, $1;
+        push @$columns, $name;
     }
 
     # Make alpha directions if asked to.
@@ -105,7 +94,7 @@ sub get_columns {
 
     # NOTE: name_direction only makes sense in an array context.
     if ($args{name_direction}) {
-        $columns = [ $columns, $direction ];
+        $columns = [ $columns, $direction, $asc_desc ];
     }
     else {
         @$columns = col_dir_list ($columns, $direction);
@@ -160,12 +149,29 @@ sub to_asc_desc {
 }
 # }}}
 
+# sub _name_direction {{{
+sub _name_direction {
+    my ($col, $direction, $asc_desc) = @_;
+
+    if ($col =~ /^(.*?)(?:\s+(asc|desc))?$/i) {
+        # Use the direction provided; Ascend by default.
+        ($col, my $dir) = ($1, $2);
+        # Set the numeric directions.
+        $direction->{$col} = $dir && lc ($dir) eq 'desc' ? 0 : 1;
+        # Set the case sensitive alpha directions.
+        $asc_desc->{$col} = $dir ? $dir : '';
+    }
+
+    return $col, $direction, $asc_desc;
+}
+# }}}
+
 1;
 __END__
 
 =head1 NAME
 
-SQL::OrderBy - Transform an SQL "order by" clause.
+SQL::OrderBy - Transform an SQL ORDER BY clause.
 
 =head1 SYNOPSIS
 
@@ -197,7 +203,7 @@ SQL::OrderBy - Transform an SQL "order by" clause.
   @columns = col_dir_list (\@column_names, \%direction);
   # ('name', 'artist desc', 'album')
 
-  # Convert numeric directions to SQL keywords.
+  # Convert the numeric directions to SQL keywords.
   %direction = to_asc_desc (
       \%direction,
       show_ascending => 1,
@@ -323,7 +329,7 @@ numeric_direction => Return Boolean column directions, instead of
 asc/desc.  Off by default.  Only makes sense with the
 name_direction flag on.
 
-uc_direction => Render new alpha column directions in uppercase.
+uc_direction => Render any new alpha column direction in uppercase.
 Off by default.
 
 =head2 col_dir_list
@@ -338,24 +344,26 @@ reference to a direction hash.
 
 =head2 to_asc_desc
 
-  %asc_desc = to_asc_desc (
+  %direction = to_asc_desc (
       \%direction,
       show_ascending => $x,
       uc_direction   => $y,
   )
 
 Return column directions as alpha keywords in place of their numeric
-eqivalents.  Note that, if the direction hash contains any alpha
-(asc/desc) values, the function uses those by default.
+eqivalents.
+
+If the direction hash contains any alpha (asc/desc) values, the
+function uses those by default.
 
 This function takes a reference to a direction hash and optional
 flags to control the display of the asc keyword and new direction
 names.  These flags are:
 
-show_ascending => Expose asc column directions.  Off by default.
+show_ascending => Expose the asc column directions.  Off by default.
 
-uc_direction => Render new alpha column directions in uppercase.  Off
-by default.
+uc_direction => Render any new alpha column direction in uppercase.
+Off by default.
 
 =head1 DEPENDENCIES
 

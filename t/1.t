@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 19;
+use Test::More tests => 21;
 
 BEGIN { use_ok('SQL::OrderBy') };
 
@@ -7,13 +7,11 @@ BEGIN { use_ok('SQL::OrderBy') };
 my @columns = get_columns (
     order_by => [],
 );
-is join (', ', @columns), '',
-    'empty column array';
+is scalar @columns, 0, 'empty column array';
 @columns = get_columns (
     order_by => '',
 );  
-is join (', ', @columns), '',
-    'empty column string';
+is scalar @columns, 0, 'empty column string';
 
 # fetch a numeric name_direction list
 @columns = get_columns (
@@ -25,8 +23,8 @@ is join (', ', @columns), '',
 is join (', ', @{ $columns[0] }),
     'name, artist, album',
     'column name list';
-is join (', ', map { "$_ $columns[1]->{$_}" } sort keys %{ $columns[1] }),
-    'album 1, artist 0, name 1',
+is join (', ', map { $columns[1]->{$_} } sort keys %{ $columns[1] }),
+    '1, 0, 1',
     'numeric column directions';
 
 # fetch a asc/desc name_direction list
@@ -121,6 +119,21 @@ is join (', ', @order), 'artist, name, album',
 );
 is join (', ', @order), 'artist, name, album',
     'order clause in array context';
+
+# toggle unseen column name with blank order-by
+$order = toggle_resort (
+    selected => 'time',
+    order_by => '',
+);
+is $order, 'time',
+    'unseen column with blank order clause';
+# toggle unseen column name and direction with blank order-by
+$order = toggle_resort (
+    selected => 'time desc',
+    order_by => '',
+);
+is $order, 'time desc',
+    'unseen column and direction in blank order clause';
 
 # exposed asc nested toggle
 $order = toggle_resort (
