@@ -8,22 +8,22 @@ BEGIN { use_ok('SQL::OrderBy') };
 
 #########################
 
-my $order = resort(
-    order_by => 'name, artist, album',
+my $order = SQL::OrderBy::toggle_resort(
     selected => 'artist',
+    order_by => 'name, artist, album',
 );
 is $order, 'artist asc, name asc, album asc',
     'single transformation';
 
-$order = resort(
-    order_by => resort(
-        order_by => resort(
-            order_by => 'name, artist, album',
-            selected => 'artist',
-        ),
-        selected => 'artist',
-    ),
+$order = SQL::OrderBy::toggle_resort(
     selected => 'time',
+    order_by => SQL::OrderBy::toggle_resort(
+        selected => 'artist',
+        order_by => SQL::OrderBy::toggle_resort(
+            selected => 'artist',
+            order_by => 'name, artist, album'
+        )
+    )
 );
 is $order, 'time asc, artist desc, name asc, album asc',
     'nested transformation';
