@@ -10,7 +10,7 @@ use vars qw(@EXPORT @EXPORT_OK);
     num2asc_desc
 );
 use vars qw($VERSION);
-$VERSION = '0.07';
+$VERSION = '0.07.1';
 
 # sub toggle_resort {{{
 # Transform an order by clause.
@@ -18,11 +18,8 @@ sub toggle_resort {
     my %args = @_;
     _set_defaults(\%args);
 
-    # Declare an ordered array and a direction hash of columns.
-    my ($columns, $direction);
-
     # Set the column name list and the directions.
-    ($columns, $direction) = get_columns(
+    my ($columns, $direction) = get_columns(
         order_by => $args{order_by},
         show_ascending => $args{show_ascending},
         name_direction => 1,
@@ -48,9 +45,11 @@ sub toggle_resort {
         unshift @$columns, $selected;
     }
 
+    # Convert from numeric, if asked to.
     %$direction = num2asc_desc ($direction, $args{show_ascending})
         unless $args{numeric_direction};
-    
+
+    # Fetch our "name direction" array.
     @$columns = col_dir_list ($columns, $direction);
 
     # Return the column ordering as an arrayref or string.
@@ -83,7 +82,7 @@ sub get_columns {
     for (@order) {
         if (/^(.*?)(?:\s+(asc|desc))?$/i) {
             # Use the direction provided; Ascend by default.
-            $direction->{$1} = $2 && $2 eq 'desc' ? 0 : 1;
+            $direction->{$1} = $2 && lc ($2) eq 'desc' ? 0 : 1;
         }
 
         # Add the column to our columns array.
@@ -120,10 +119,10 @@ sub col_dir_list {
 # sub num2asc_desc {{{
 # Return directions as "asc" and "desc" in place of their numeric eqivalents.
 sub num2asc_desc {
-    my ($dir, $show_ascending) = @_;
+    my ($dir, $show_asc) = @_;
     return map {
         $_ => $dir->{$_}
-            ? $show_ascending ? 'asc' : ''
+            ? $show_asc ? 'asc' : ''
             : 'desc'
     } keys %$dir;
 }
@@ -133,7 +132,7 @@ sub num2asc_desc {
 # Naive little default argument setter.
 sub _set_defaults {
     my $args = shift;
-    $args->{show_ascending}    = 1 unless defined $args->{show_ascending};
+    $args->{show_ascending}    = 0 unless defined $args->{show_ascending};
     $args->{name_direction}    = 0 unless defined $args->{name_direction};
     $args->{numeric_direction} = 0 unless defined $args->{numeric_direction};
 }
@@ -152,39 +151,43 @@ SQL::OrderBy - Transform an SQL ORDER BY clause.
 
   # Fetch the columns in array context.
   @columns = get_columns (
-      order_by => 'name, artist desc, album',
+      order_by => 'Name, Artist DESC, Album',
   );
-  # ('name asc', 'artist desc', 'album asc')
+  # ('Name', 'Artist desc', 'Album')
 
-  # Fetch the columns in scalar context without the asc keyword.
+  # Fetch the columns in scalar context.
   $columns = get_columns (
       order_by => ['name', 'artist desc', 'album'],
-      show_ascending => 0,
+      show_ascending => 1,
   );
-  # 'name, artist desc, album'
+  # 'name asc, artist desc, album asc'
 
   # Fetch the columns as a name array and numeric direction hash.
   @columns = get_columns (
       order_by => 'name, artist desc, album',
-      name_direction => 1,
+      name_direction    => 1,
       numeric_direction => 1,
   );
   # (['name','artist','album'], {name=>1, artist=>0, album=>1})
 
-  @columns = col_dir_list (\@column_names, \%directions);
+  # Output a "column direction" array.
+  @columns = col_dir_list (\@column_names, \%direction);
+  # ('name', 'artist desc', 'album')
 
-  %directions = num2asc_desc (\%directions, 0);
+  # Fetch the directions as SQL keywords.
+  %direction = num2asc_desc (\%direction, 0);
+  # (name=>'asc', artist=>'desc', album=>'asc')
 
-  # Toggle resort in array context.
+  # Single toggle resort in array context.
   @order = toggle_resort (
+      show_ascending => 1,
       selected => 'artist',
       order_by => ['name', 'artist', 'album'],
   );
   # ('artist asc', 'name asc', 'album asc')
 
-  # Toggle resort in scalar context without the asc keyword.
+  # Nested toggle resort in scalar context.
   print scalar toggle_resort (
-      show_ascending => 0,
       selected => 'time',
       order_by => scalar toggle_resort(
           selected => 'artist',
@@ -211,7 +214,7 @@ integrity checking is done.
 
 =head1 FUNCTIONS
 
-=head2 toggle_resort ()
+=head2 toggle_resort
 
   toggle_resort(
       order_by => $order_clause_or_list,
@@ -251,13 +254,11 @@ user interacts with a table by sorting and resorting with a mouse and
 "toggle button column headings" during an interactive search
 refinement session.
 
-* If you leave off the selected argument, this function will simply
-return the clause with sort directions for each column name.  That
-is, no "toggling" or moving is done.
+* If you do not include the selected argument, this function will
+simply return the clause with sort directions for each column name.
+That is, no "toggling" or moving is done.
 
-* Currently, this function is not exported by default.
-
-=head2 get_columns ()
+=head2 get_columns
 
   @columns = get_columns (
       order_by => $order_clause_or_list,
@@ -291,9 +292,9 @@ numeric_direction => Return Boolean column directions, instead of
 asc/desc.  Defaults off (0).  Only makes sense with the
 name_direction flag on.
 
-=head2 col_dir_list ()
+=head2 col_dir_list
 
-  @columns = col_dir_list (\@columns, \%asc_desc);
+  @columns = col_dir_list (\@columns, \%direction);
 
 Return an array of column names with their respective directions
 concatinated.
@@ -301,11 +302,11 @@ concatinated.
 This function takes a reference to an array of column names and a
 reference to a direction hash.
 
-=head2 num2asc_desc ()
+=head2 num2asc_desc
 
-  %directions = num2asc_desc (\%directions, $show_asc)
+  %direction = num2asc_desc (\%direction, $show_asc)
 
-Return directions as "asc" and "desc" in place of their numeric
+Return direction as "asc" and "desc" in place of their numeric
 eqivalents.
 
 This function takes a reference to a direction hash and an optional

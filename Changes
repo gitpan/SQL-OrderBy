@@ -36,3 +36,9 @@ Revision history for Perl extension SQL::OrderBy.
     - Added a function to render a column "name direction" list.
     - Added a function to convert a numeric direction list to asc/desc format.
     - Added binary flags for returning different formats.
+
+0.07.1  Tue Feb 25 2003
+    - Oof!  Fixed asc/desc case visibility.
+    - Turned the asc exposure default to "off" (0).
+    - Fixed the test cases and synopsis.
+    - Cleaned up the docs a bit, of course...
