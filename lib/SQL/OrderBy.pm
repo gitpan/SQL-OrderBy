@@ -1,21 +1,13 @@
-# $Id: OrderBy.pm,v 1.2 2003/09/28 07:48:09 gene Exp $
+# $Id: OrderBy.pm,v 1.5 2004/08/23 03:06:21 gene Exp $
 
 package SQL::OrderBy;
-
+$VERSION = '0.09';
 use strict;
-use vars '$VERSION';
-$VERSION = '0.0808';
-use base 'Exporter';
-use vars qw(@EXPORT @EXPORT_OK);
-@EXPORT_OK = @EXPORT = qw(
-    toggle_resort
-    get_columns
-    col_dir_list
-    to_asc_desc
-);
+use warnings;
+use Carp;
 
 # Transform an order by clause.
-sub toggle_resort {  # {{{
+sub toggle_resort {
     my %args = @_;
 
     # Set the column name list and the directions.
@@ -31,11 +23,10 @@ sub toggle_resort {  # {{{
             $name, $direction, $asc_desc
         );
 
-        # Toggle if the selected column is the first one.
-        if ($name eq $columns->[0]) {
-            $direction->{$name} = $direction->{$name}
-                ? 0 : 1;
-        }
+        # Toggle if the selected column was already the first one.
+         if ($columns && @$columns && $name eq $columns->[0]) {
+             $direction->{$name} = $direction->{$name} + 0 ? 0 : 1;
+         }
 
         # Remove the selected column name from its old position.
         @$columns = grep { $_ ne $name } @$columns;
@@ -52,11 +43,11 @@ sub toggle_resort {  # {{{
 
     # Return the column ordering as an arrayref or string.
     return wantarray ? @$columns : join ', ', @$columns;
-}  # }}}
+}
 
 # Return the column names and directions as either hash/array
 # references, or a column array, or an "order by" clause.
-sub get_columns {  # {{{
+sub get_columns {
     my %args = @_;
 
     # Set the order array from the order_by argument.
@@ -104,22 +95,22 @@ sub get_columns {  # {{{
     }
 
     return wantarray ? @$columns : join ', ', @$columns;
-}  # }}}
+}
 
 # Return an array of column names with their respective directions
 # concatinated.  This is conditional concatination.  ASC/DESC vs.
 # 1/0 issues do not concern us here.
-sub col_dir_list {  # {{{
+sub col_dir_list {
     my ($columns, $direction) = @_;
     return map {
         $direction->{$_}
             ? "$_ $direction->{$_}"
             : $_
     } @$columns;
-}  # }}}
+}
 
 # Return alpha directions in place of numeric eqivalents.
-sub to_asc_desc {  # {{{
+sub to_asc_desc {
     my $dir = shift;
     my %args = @_;
 
@@ -146,9 +137,9 @@ sub to_asc_desc {  # {{{
     }
 
     return %$dir;
-}  # }}}
+}
 
-sub _name_direction {  # {{{
+sub _name_direction {
     my ($col, $direction, $asc_desc) = @_;
 
     if ($col =~ /^(.*?)(?:\s+(asc|desc))?$/i) {
@@ -161,7 +152,7 @@ sub _name_direction {  # {{{
     }
 
     return $col, $direction, $asc_desc;
-}  # }}}
+}
 
 1;
 __END__
@@ -174,80 +165,74 @@ SQL::OrderBy - Transform an SQL "order by" clause
 
   use SQL::OrderBy;
 
-  @order = toggle_resort (
-      show_ascending => 1,
-      selected => 'artist',
+  @order = SQL::OrderBy::toggle_resort(
       order_by => ['name', 'artist', 'album'],
-  );
-  # ('artist asc', 'name asc', 'album asc')
+      selected => 'artist',
+      show_ascending => 1,
+  );  # ('artist asc', 'name asc', 'album asc')
 
-  print scalar toggle_resort (
+  # resort ad infinitum
+  $initial_order = 'name, artist, album';
+  print scalar SQL::OrderBy::toggle_resort(
       selected => 'time',
-      order_by => scalar toggle_resort(
+      order_by => scalar SQL::OrderBy::toggle_resort(
           selected => 'artist',
-          order_by => scalar toggle_resort(
+          order_by => scalar SQL::OrderBy::toggle_resort(
               selected => 'artist',
-              order_by => 'name asc, artist asc, album asc'
+              order_by => $initial_order,
           )
       )
-  );
-  # 'time, artist desc, name, album'
+  );  # 'time, artist desc, name, album'
 
-  #----------------------------------------------------------------
-  # The following are functions used by the toggle_resort function,
-  # but are probably handy, in their own right.  : )
 
-  # Fetch the columns in array context.
-  @columns = get_columns (
-      order_by => 'Name, Artist Desc, Album',
-  );
-  # ('Name', 'Artist Desc', 'Album')
+The following functions are either used by the resort function(s)
+or exist to allow compatibility with other SQL statement handling
+modules.
 
-  # Fetch the columns in scalar context.
-  $columns = get_columns (
+  %direction = SQL::OrderBy::to_asc_desc( \%direction );
+  # (name=>'', artist=>'desc', album=>'')
+
+  %direction = SQL::OrderBy::to_asc_desc(
+      \%direction,
+      show_ascending => 1
+  );  # (name=>'asc', artist=>'desc', album=>'asc')
+
+  @columns = SQL::OrderBy::get_columns(
+      order_by => 'Name, Artist Desc, Album'
+  );  # ('Name', 'Artist Desc', 'Album')
+
+  $columns = SQL::OrderBy::get_columns(
       order_by => ['NAME', 'ARTIST DESC', 'ALBUM'],
       show_ascending => 1,
-      uc_direction => 1,
-  );
-  # 'NAME ASC, ARTIST DESC, ALBUM ASC'
+      uc_direction   => 1,
+  );  # 'NAME ASC, ARTIST DESC, ALBUM ASC'
 
   # Fetch the columns as a name array and direction hashes.
-  @columns = get_columns (
+  @columns = SQL::OrderBy::get_columns(
       order_by => 'name, artist deSc, album',
       name_direction    => 1,
       numeric_direction => 1,
-  );
-  # (['name','artist','album'],
-  #  {name=>1, artist=>0, album=>1},
-  #  {name=>'', artist=>'deSc', album=>''})
+  );  # ( ['name', 'artist', 'album'],
+      #   {name=>1, artist=>0, album=>1},
+      #   {name=>'', artist=>'deSc', album=>''} )
 
   # Output a "column direction" array.
-  @columns = col_dir_list (\@column_names, \%direction);
-  # ('name', 'artist desc', 'album')
-
-  # Convert the numeric directions to SQL keywords.
-  %direction = to_asc_desc (
-      \%direction,
-      show_ascending => 1,
-  );
-  # (name=>'asc', artist=>'desc', album=>'asc')
+  @columns = SQL::OrderBy::col_dir_list(
+      \@column_names, \%direction
+  );  # ('name', 'artist desc', 'album')
 
 =head1 DESCRIPTION
 
 This package simply transforms an SQL "order by" clause by moving or
 adding column names and toggling their ascending/descending state.
 
-Note that this is intentionally naive code, in that no database
-integrity checking is done.
-
-=head1 FUNCTIONS
+=head1 PRIMARY FUNCTIONS
 
 =head2 toggle_resort
 
   @columns = toggle_resort(
       order_by => $order_clause_or_list,
       selected => $column_name,
-      # Optional arguments:
       show_ascending    => $w,
       uc_direction      => $x,
       name_direction    => $y,
@@ -257,50 +242,46 @@ integrity checking is done.
   $columns = toggle_resort(
       order_by => $order_clause_or_list,
       selected => $column_name,
-      # Optional arguments:
-      show_ascending    => $w,
-      uc_direction      => $x,
+      show_ascending => $w,
+      uc_direction   => $x,
   )
 
-This function takes two arguments provided as named parameters: an 
-SQL "order by" clause (provided as either a string or an array 
-reference) and a column name.
+This function implements a simple but essential feature of GUI database
+environments, where the user interacts with a database table by sorting
+and resorting via "toggled" column headings during search refinement.
 
-The selected column name is moved or added to the beginning of the
-clause with its sort direction exposed.  If this column is the first
-column of the list, its sort direction is flipped between ascending
-(asc) and descending (desc).
+In this, the selected column name is moved (or added) to the beginning
+of the clause.  If this column was the first in the original clause,
+its sort direction is flipped between ascending (asc) and descending
+(desc).
 
-In a scalar context, this function returns the clause as a (CSV)
-string.  In an array context, this function returns a list of column
-names with their respective sort directions.
+This function takes a required SQL "order by" clause that can be
+provided as either a string or an array reference, and a "selected"
+column name.  If no selected column is provided, no "toggling" or
+moving is done.
 
-Note that the state of the sort is maintained, since the selected
-column name is the only one that is fondled.
+In a scalar context, this function returns the clause as a comma
+separated string.  In an array context, this function returns a list
+of column names with their respective sort directions.
 
-This function implements an essential feature for GUI environments, 
-where the user interacts with a database table by sorting and 
-resorting with (for instance) a mouse and "toggle button column 
-headings", during an interactive search refinement session.
+These optional flags affect the format of the returned data structure
+and are all off by default.
 
-* If you do not include the selected argument, this function will
-simply return the clause with sort directions for each column name.
-That is, no "toggling" or moving is done.
+  Expose the ascending column directions.
+  show_ascending => 0
 
-This function optionally takes Boolean flags affecting the returned
-data structure.  These are:
+  Render any new alpha column direction in uppercase.
+  uc_direction => 0
 
-show_ascending => Expose the asc column directions.  Off by default.
+  Return references to the column names and their directions.
+  (only makes sense in an array context)
+  name_direction => 0
 
-uc_direction => Render any new alpha column direction in uppercase.
-Off by default.
+  Return Boolean column directions, instead of asc/desc.
+  (only makes sense if the name_direction flag is on)
+  numeric_direction => 0
 
-name_direction => Return references to the column names and their
-directions.  Off by default.  Only makes sense in array context.
-
-numeric_direction => Return Boolean column directions, instead of
-asc/desc.  Off by default.  Only makes sense with the name_direction
-flag on.
+=head1 CONVENIENCE FUNCTIONS
 
 =head2 get_columns
 
@@ -364,13 +345,13 @@ documentation, above.
 
 None.
 
+=head1 EXPORTS
+
+None, Nothing, Nada.
+
 =head1 TO DO
 
-Add functions for different kinds of resorting?
-
-=head1 HISTORY
-
-See the Changes file in this distribution.
+Add functions for different kinds of resorting.
 
 =head1 AUTHOR
 
