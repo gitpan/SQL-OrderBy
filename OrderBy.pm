@@ -10,7 +10,7 @@ use vars qw(@EXPORT @EXPORT_OK);
     to_asc_desc
 );
 use vars qw($VERSION);
-$VERSION = '0.08.4';
+$VERSION = '0.08.5';
 
 # sub toggle_resort {{{
 # Transform an order by clause.
@@ -26,7 +26,9 @@ sub toggle_resort {
 
     # Handle a selected column.
     if (my $name = $args{selected}) {
-        ($name, $direction, $asc_desc) = _name_direction($name, $direction, $asc_desc);
+        ($name, $direction, $asc_desc) = _name_direction(
+            $name, $direction, $asc_desc
+        );
 
         # Toggle if the selected column is the first one.
         if ($name eq $columns->[0]) {
@@ -82,7 +84,9 @@ sub get_columns {
 
     # Set the column array and direction hashes.
     for (@order) {
-        (my $name, $direction, $asc_desc) = _name_direction($_, $direction, $asc_desc);
+        (my $name, $direction, $asc_desc) = _name_direction(
+            $_, $direction, $asc_desc
+        );
 
         # Add the column to our columns array.
         push @$columns, $name;
@@ -171,7 +175,7 @@ __END__
 
 =head1 NAME
 
-SQL::OrderBy - Transform an SQL ORDER BY clause.
+SQL::OrderBy - Transform an SQL "order by" clause.
 
 =head1 SYNOPSIS
 
@@ -236,11 +240,11 @@ SQL::OrderBy - Transform an SQL ORDER BY clause.
 =head1 ABSTRACT
 
 Resort and toggle (ascending/descending) table columns given an SQL
-ORDER BY clause.
+"order by" clause.
 
 =head1 DESCRIPTION
 
-This package simply transforms an SQL ORDER BY clause by moving or
+This package simply transforms an SQL "order by" clause by moving or
 adding column names and toggling their ascending/descending state.
 
 Note that this is intentionally naive code, in that no database
@@ -256,7 +260,7 @@ integrity checking is done.
   )
 
 This function takes two arguments provided as named parameters: an 
-SQL "ORDER BY" clause as either a string or array reference and a 
+SQL "order by" clause as either a string or array reference and a 
 column name.
 
 The selected column name is moved or added to the beginning of the

@@ -73,3 +73,6 @@ Revision history for Perl extension SQL::OrderBy.
 0.08.4  Mon Mar  3 2003
     - Ack.  I forgot to make Test::More know how many tests it should
       run.
+
+0.08.5  Mon Mar  3 2003
+    - Okay.  Maybe I'm typographically obsessive-compulsive.
