@@ -20,23 +20,28 @@ is join (', ', map { "$_ $columns[1]->{$_}" } sort keys %{ $columns[1] }),
 # fetch a asc/desc name_direction list
 # NOTE: Original case of asc/DESC is not preserved. Oops!
 @columns = get_columns (
-    order_by => 'Name, Artist DESC, Album',
-    show_ascending    => 1,
-    name_direction    => 1,
-    numeric_direction => 0,
+    order_by => 'Name, Artist Desc, Album',
+    show_ascending => 1,
+    name_direction => 1,
 );
 is join (', ', map { "$_ $columns[1]->{$_}" } sort keys %{ $columns[1] }),
-    'Album asc, Artist desc, Name asc',
+    'Album asc, Artist Desc, Name asc',
     'column directions for asc/desc name_direction';
 
 # convert column directions
 my %direction = (NAME => 1, ARTIST => 0, ALBUM => 1);
-%direction = num2asc_desc (\%direction, 0);
+%direction = to_asc_desc (
+    \%direction,
+    uc_direction => 1,
+);
 is join (', ', map { $direction{$_} ? "$_ $direction{$_}" : $_ } sort keys %direction),
-    'ALBUM, ARTIST desc, NAME',
-    'numeric column directions to hidden asc/desc';
+    'ALBUM, ARTIST DESC, NAME',
+    'numeric column directions to hidden ASC/DESC';
 %direction = (name => 1, artist => 0, album => 1);
-%direction = num2asc_desc (\%direction, 1);
+%direction = to_asc_desc (
+    \%direction,
+    show_ascending => 1,
+);
 is join (', ', map { $direction{$_} ? "$_ $direction{$_}" : $_ } sort keys %direction),
     'album asc, artist desc, name asc',
     'numeric column directions to exposed asc/desc';
@@ -52,7 +57,6 @@ is join (', ', @columns), 'name asc, artist desc, album asc',
 @columns = get_columns (
     order_by => 'name, artist desc, album',
     show_ascending => 1,
-    name_direction => 0,
 );
 is join (', ', @columns), 'name asc, artist desc, album asc',
     'column names with exposed direction in array context';
@@ -60,7 +64,6 @@ is join (', ', @columns), 'name asc, artist desc, album asc',
 my $columns = get_columns (
     order_by => ['name', 'artist desc', 'album'],
     show_ascending => 1,
-    name_direction => 0,
 );
 is $columns, 'name asc, artist desc, album asc',
     'column names with exposed direction in scalar context';
@@ -69,16 +72,12 @@ is $columns, 'name asc, artist desc, album asc',
 # in array context
 @columns = get_columns (
     order_by => 'name asc, artist desc, album',
-    show_ascending => 0,
-    name_direction => 0,
 );
 is join (', ', @columns), 'name, artist desc, album',
     'column names with hidden asc in array context';
 # in scalar context
 $columns = get_columns (
     order_by => ['name', 'artist desc', 'album'],
-    show_ascending => 0,
-    name_direction => 0,
 );
 is $columns, 'name, artist desc, album',
     'column names with hidden asc in scalar context';
@@ -113,7 +112,6 @@ is join (', ', @order), 'artist, name, album',
 
 # hidden asc nested toggle
 $order = toggle_resort (
-    show_ascending => 0,
     selected => 'time',
     order_by => scalar toggle_resort(
         selected => 'artist',

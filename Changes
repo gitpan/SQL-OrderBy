@@ -11,13 +11,14 @@ Revision history for Perl extension SQL::OrderBy.
     - Ack!  My synopsis!
 
 0.04  Fri Feb 21 2003
-    - Renamed the resort() function.  Enhanced documentation.
+    - Renamed the resort() function to toggle_resort().
+    - Enhanced documentation.
 
 0.05  Fri Feb 21 2003
     - Allow toggle_resort() to accept an array reference as well as a
       string clause.
     - Add scalar/array context sensitivity to toggle_resort().
-      Fix/enhance documentation.
+    - Fix/enhance documentation.
 
 0.06  Fri Feb 21 2003
     - Ugh.  Fixed my documentation again.
@@ -34,7 +35,8 @@ Revision history for Perl extension SQL::OrderBy.
 0.07  Tue Feb 25 2003
     - Added a function to fetch column names and directions.
     - Added a function to render a column "name direction" list.
-    - Added a function to convert a numeric direction list to asc/desc format.
+    - Added a function to convert a numeric direction list to
+      asc/desc format.
     - Added binary flags for returning different formats.
 
 0.07.1  Tue Feb 25 2003
@@ -42,3 +44,11 @@ Revision history for Perl extension SQL::OrderBy.
     - Turned the asc exposure default to "off" (0).
     - Fixed the test cases and synopsis.
     - Cleaned up the docs a bit, of course...
+
+0.08  Thu Feb 27 2003
+    - Reformed distribution files for CPAN.
+    - Renamed the num2asc_desc() function to to_asc_desc().
+    - Removed the unnecessary _set_defaults() function.
+    - Made the to_asc_desc() function accept named arguments.
+    - Allow persistent case for a direction name that is passed in.
+    - Fix/enhance documentation.
