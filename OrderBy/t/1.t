@@ -3,7 +3,7 @@
 
 #########################
 
-use Test::More tests => 3;
+use Test::More tests => 6;
 BEGIN { use_ok('SQL::OrderBy') };
 
 #########################
@@ -13,13 +13,32 @@ my $order = SQL::OrderBy::toggle_resort(
     order_by => 'name, artist, album',
 );
 is $order, 'artist asc, name asc, album asc',
-    'single transformation';
+    'order clause in scalar context';
+$order = SQL::OrderBy::toggle_resort(
+    selected => 'artist',
+    order_by => [ qw(name artist album) ],
+);
+is $order, 'artist asc, name asc, album asc',
+    'order array in scalar context';
+
+my @order = SQL::OrderBy::toggle_resort(
+    selected => 'artist',
+    order_by => 'name, artist, album',
+);
+is join (', ', @order), 'artist asc, name asc, album asc',
+    'order clause in array context';
+@order = SQL::OrderBy::toggle_resort(
+    selected => 'artist',
+    order_by => [ qw(name artist album) ],
+);
+is join (', ', @order), 'artist asc, name asc, album asc',
+    'order array in array context';
 
 $order = SQL::OrderBy::toggle_resort(
     selected => 'time',
-    order_by => SQL::OrderBy::toggle_resort(
+    order_by => scalar SQL::OrderBy::toggle_resort(
         selected => 'artist',
-        order_by => SQL::OrderBy::toggle_resort(
+        order_by => scalar SQL::OrderBy::toggle_resort(
             selected => 'artist',
             order_by => 'name, artist, album'
         )

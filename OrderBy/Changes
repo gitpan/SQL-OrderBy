@@ -4,3 +4,17 @@ Revision history for Perl extension SQL::OrderBy.
 	- original version; created by h2xs 1.22 with options
 		-X -n SQL::OrderBy
 
+0.02  Mon Feb  3 2003
+    - Documentation fixes and enhancement.
+
+0.03  Mon Feb  3 2003
+    - Ack!  My synopsis!
+
+0.04  Fri Feb 21 2003
+    - Renamed the resort() function.  Enhanced documentation.
+
+0.05  Fri Feb 21 2003
+    - Allow toggle_resort() to accept an array reference as well as a
+      string clause.
+    - Add scalar/array context sensitivity to toggle_resort().
+      Fix/enhance documentation.
