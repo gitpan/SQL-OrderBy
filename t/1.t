@@ -1,10 +1,22 @@
 use strict;
-use Test::More tests => 17;
+use Test::More tests => 19;
 
 BEGIN { use_ok('SQL::OrderBy') };
 
 # fetch a numeric name_direction list
 my @columns = get_columns (
+    order_by => [],
+);
+is join (', ', @columns), '',
+    'empty column array';
+@columns = get_columns (
+    order_by => '',
+);  
+is join (', ', @columns), '',
+    'empty column string';
+
+# fetch a numeric name_direction list
+@columns = get_columns (
     order_by => 'name, artist desc, album',
     show_ascending    => 1,
     name_direction    => 1,
@@ -12,10 +24,10 @@ my @columns = get_columns (
 );
 is join (', ', @{ $columns[0] }),
     'name, artist, album',
-    'column name list for name_direction';
+    'column name list';
 is join (', ', map { "$_ $columns[1]->{$_}" } sort keys %{ $columns[1] }),
     'album 1, artist 0, name 1',
-    'column directions for numeric name_direction';
+    'numeric column directions';
 
 # fetch a asc/desc name_direction list
 # NOTE: Original case of asc/DESC is not preserved. Oops!
@@ -26,7 +38,7 @@ is join (', ', map { "$_ $columns[1]->{$_}" } sort keys %{ $columns[1] }),
 );
 is join (', ', map { "$_ $columns[1]->{$_}" } sort keys %{ $columns[1] }),
     'Album asc, Artist Desc, Name asc',
-    'column directions for asc/desc name_direction';
+    'asc/desc column directions';
 
 # convert column directions
 my %direction = (NAME => 1, ARTIST => 0, ALBUM => 1);
@@ -59,14 +71,14 @@ is join (', ', @columns), 'name asc, artist desc, album asc',
     show_ascending => 1,
 );
 is join (', ', @columns), 'name asc, artist desc, album asc',
-    'column names with exposed direction in array context';
+    'column names with exposed asc in array context';
 # in scalar context
 my $columns = get_columns (
     order_by => ['name', 'artist desc', 'album'],
     show_ascending => 1,
 );
 is $columns, 'name asc, artist desc, album asc',
-    'column names with exposed direction in scalar context';
+    'column names with exposed asc in scalar context';
 
 # fetch column names with hidden asc
 # in array context
@@ -85,44 +97,30 @@ is $columns, 'name, artist desc, album',
 # toggle in scalar context
 my $order = toggle_resort (
     selected => 'artist',
-    order_by => 'name, artist, album',
-);
-is $order, 'artist, name, album',
-    'order clause in scalar context';
-$order = toggle_resort (
-    selected => 'artist',
     order_by => [ qw(name artist album) ],
 );
 is $order, 'artist, name, album',
     'order array in scalar context';
-
-# toggle in array context
-my @order = toggle_resort (
+$order = toggle_resort (
     selected => 'artist',
     order_by => 'name, artist, album',
 );
-is join (', ', @order), 'artist, name, album',
-    'order clause in array context';
-@order = toggle_resort (
+is $order, 'artist, name, album',
+    'order clause in scalar context';
+
+# toggle in array context
+my @order = toggle_resort (
     selected => 'artist',
     order_by => [ qw(name artist album) ],
 );
 is join (', ', @order), 'artist, name, album',
     'order array in array context';
-
-# hidden asc nested toggle
-$order = toggle_resort (
-    selected => 'time',
-    order_by => scalar toggle_resort(
-        selected => 'artist',
-        order_by => scalar toggle_resort(
-            selected => 'artist',
-            order_by => 'name asc, artist asc, album asc',
-        )
-    )
+@order = toggle_resort (
+    selected => 'artist',
+    order_by => 'name, artist, album',
 );
-is $order, 'time, artist desc, name, album',
-    'hidden asc nested transformation';
+is join (', ', @order), 'artist, name, album',
+    'order clause in array context';
 
 # exposed asc nested toggle
 $order = toggle_resort (
@@ -138,3 +136,17 @@ $order = toggle_resort (
 );
 is $order, 'time asc, artist desc, name asc, album asc',
     'exposed asc nested transformation';
+
+# hidden asc nested toggle
+$order = toggle_resort (
+    selected => 'time',
+    order_by => scalar toggle_resort(
+        selected => 'artist',
+        order_by => scalar toggle_resort(
+            selected => 'artist',
+            order_by => 'name asc, artist asc, album asc',
+        )
+    )
+);
+is $order, 'time, artist desc, name, album',
+    'hidden asc nested transformation';
