@@ -26,3 +26,7 @@ Revision history for Perl extension SQL::OrderBy.
     - Corrected the version number and author email.
     - Oops!  Only require an interpreter of 5.005.
     - Document the test a bit.
+
+0.06.2  Mon Feb 24 2003
+    - Fixed documentation again.
+    - Rearranged distribution files.

@@ -8,7 +8,7 @@ use strict;
 #    toggle_resort
 #);
 use vars qw($VERSION);
-$VERSION = '0.06.1';
+$VERSION = '0.06.2';
 
 # Transform an order by clause.
 sub toggle_resort {
@@ -75,27 +75,27 @@ SQL::OrderBy - Transform an SQL ORDER BY clause.
 
 =head1 SYNOPSIS
 
-    use SQL::OrderBy;
+  use SQL::OrderBy;
 
-    # Array context
-    my @order = SQL::OrderBy::toggle_resort(
-        selected => 'artist',
-        order_by => [ qw(name artist album) ],
-    );
-    # ('artist asc', 'name asc', 'album asc')
+  # Array context
+  my @order = SQL::OrderBy::toggle_resort(
+      selected => 'artist',
+      order_by => [ qw(name artist album) ],
+  );
+  # ('artist asc', 'name asc', 'album asc')
 
-    # Scalar context
-    print scalar SQL::OrderBy::toggle_resort(
-        selected => 'time',
-        order_by => scalar SQL::OrderBy::toggle_resort(
-            selected => 'artist',
-            order_by => scalar SQL::OrderBy::toggle_resort(
-                selected => 'artist',
-                order_by => 'name, artist, album'
-            )
-        )
-    );
-    # 'time asc, artist desc, name asc, album asc'
+  # Scalar context
+  print scalar SQL::OrderBy::toggle_resort(
+      selected => 'time',
+      order_by => scalar SQL::OrderBy::toggle_resort(
+          selected => 'artist',
+          order_by => scalar SQL::OrderBy::toggle_resort(
+              selected => 'artist',
+              order_by => 'name, artist, album'
+          )
+      )
+  );
+  # 'time asc, artist desc, name asc, album asc'
 
 =head1 ABSTRACT
 
@@ -114,10 +114,10 @@ integrity checking is done.
 
 =head2 toggle_resort()
 
-    toggle_resort(
-        order_by => $order_clause_or_list,
-        selected => $column_name,
-    )
+  toggle_resort(
+      order_by => $order_clause_or_list,
+      selected => $column_name,
+  )
 
 This function takes two arguments provided as named parameters: an 
 SQL "ORDER BY" clause as either a string or array reference and a 
@@ -158,32 +158,7 @@ Add functions for handling different module statement objects.
 
 =head1 HISTORY
 
-0.01  Mon Feb  3 14:11:20 2003
-    - original version; created by h2xs 1.22 with options
-        -X -n SQL::OrderBy
-
-0.02  Mon Feb  3 2003
-    - Fixed/enhanced documentation.
-       
-0.03  Mon Feb  3 2003
-    - Ack!  My synopsis!
-       
-0.04  Fri Feb 21 2003
-    - Renamed the resort() function.
-    - Enhanced documentation.
-       
-0.05  Fri Feb 21 2003
-    - Made toggle_resort() accept an arrayref or string.
-    - Added scalar/array context awareness.
-    - Fixed/enhanced documentation.
-
-0.06  Fri Feb 21 2003
-    - Fixed documentation.
-
-0.06.1  Mon Feb 24 2003
-    - Corrected version number and author email.
-    - Oops!  Only require an interpreter of 5.005.
-    - Document the test a bit.
+See the Changes file in this distribution.
 
 =head1 AUTHOR
 
